@@ -27,7 +27,7 @@ function startGame(rowNum, colNum) {
         for (let c = 0; c < colNum; c++) {
             //         coord x     -       coord y       -    clicked  - mine  -  flagged  - content
             let tile = r.toString() + "-" + c.toString() + "-" + 0 + "-" + 0 + "-" + 0 + "-" + 11;
-            row.push(tile);        //<div id ="2-2-1-0-0-5"></div> 
+            row.push(tile);        //each tile is present as "2-2-1-0-0-5" in a board
         }                          //x:2-y:2-clicked:true-mine:false-flagged:false-Render:num5
         board.push(row);
     }
@@ -75,7 +75,7 @@ function startHard() {
 
 
 function setMines(rowNum, colNum) {
-    //hard code for testing only
+    //hard code for testing in 8x8 board only -> might get bug in other board size
     // minesLocation.push("2-2");
     // minesLocation.push("2-3");
     // minesLocation.push("5-6");
@@ -204,7 +204,7 @@ function handle_clickedTile() {
     let checkboard_ColNum = checkBoard[0].length;
 
     if (gameWin == true || gameOver == true || this.style.backgroundColor == "darkgrey" || gameOver == true && this.style.backgroundColor == "lightgray") {
-        return;
+        return; //if this happen (usually at endgame) -> nothing below run for this tile
     }
 
     for (let r = 0; r < checkboard_RowNum; r++) {
@@ -233,11 +233,11 @@ function handle_clickedTile() {
                 if (tile.id == tileCoords) {
                     if (tileInfo[4] == "0" && tileInfo[5] != "10") {
                         tileInfo[4] = "1";    //flagged = true
-                        tileInfo[5] = "10";   //10 -> indicate Flag image
+                        tileInfo[5] = "10";   //"10" -> indicate Flag image
                     }
                     else if (tileInfo[4] == "1" && tileInfo[5] == "10") {
-                        tileInfo[4] = "0";    //flagged = true
-                        tileInfo[5] = "11";   //0 -> indicate no image
+                        tileInfo[4] = "0";    //flagged = false
+                        tileInfo[5] = "11";   //"11" -> indicate normal image(tile not opened) - "0" indicate normal image but darkgrey(tile opened)
                     }
 
                     let tileNewInfo = tileInfo[0] + "-" + tileInfo[1] + "-" + tileInfo[2] + "-" + tileInfo[3] + "-" + tileInfo[4] + "-" + tileInfo[5];
@@ -257,7 +257,6 @@ function handle_clickedTile() {
     //if clicked on mine  
     if (minesLocation.includes(tile.id)) {
         // console.log("Game over");
-
         revealMines();
         drawBoard();
         document.getElementById("noti").innerText = "You suck!";
@@ -348,7 +347,7 @@ function checkMine(r, c) {
     minesFound += checkTile(r + 1, c);      //bottom 
     minesFound += checkTile(r + 1, c + 1);  //bottom right
 
-    if (minesFound > 0) {   //normal case for a tile next to mine -> no recursion
+    if (minesFound > 0) {   //base case for a tile next to mine -> stop recursion
         tileInfo[5] = minesFound.toString();
         let tileNewInfo = tileInfo[0] + "-" + tileInfo[1] + "-" + tileInfo[2] + "-" + tileInfo[3] + "-" + tileInfo[4] + "-" + tileInfo[5];
 
@@ -396,12 +395,12 @@ function checkTile(r, c) {
     // console.log("R: ", board_RowNum, "C: ", board_ColNum);
 
     if (r < 0 || r >= board_RowNum || c < 0 || c >= board_ColNum) {
-        return 0; //no mine out of bound
+        return 0; //no mine because out of bound
     }
     if (minesLocation.includes(r.toString() + "-" + c.toString())) {
-        return 1;
+        return 1; //has mine
     }
-    return 0;
+    return 0;   //no mine
 }
 
 let allChangingTile = [];
